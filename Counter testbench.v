@@ -1,38 +1,26 @@
-`timescale 1ns / 1ps
+`timescale 1ns/1ps
+module counter_tb;
+reg clk,rst_n;
+wire [3:0] cnt;
 
-module BinaryCounter_tb;
+counter counter_inst(.clk(clk),.rst_n(rst_n),.cnt(cnt));
 
-    parameter NUM_BITS = 4;
-    
-    reg clk;
-    reg reset;
-    
-    wire [NUM_BITS-1:0] count_value;
-    
-    BinaryCounter #(
-        .NUM_BITS(NUM_BITS)
-    ) counter_inst (
-        .clk(clk),
-        .reset(reset),
-        .value(count_value)
-    );
-    
-    initial begin
-        clk = 0;
-        forever #5 clk = ~clk;
-    end
-    
-    initial begin
-        reset = 1;
-        #10 reset = 0;
-    end
-    
-    always @(posedge clk) begin
-        $display("Counter: %b", count_value);
-    end
-    
-    initial begin
-        #50 $finish;
-    end
+initial begin
+    clk=0; rst_n=1;
+    #10
+    rst_n=0;
+    #10
+    rst_n=1;    //초기화
+    #200
+    rst_n=0;
+    #10
+    rst_n=1;    //reset 동작확인
+    #10
+    $finish;
+end
+always #5 clk = ~clk;
 
+initial begin
+    $monitor("시간 = %t, output cnt = %d", $time, cnt);
+end
 endmodule
