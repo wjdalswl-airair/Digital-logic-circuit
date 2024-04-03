@@ -1,19 +1,32 @@
-`timescale 1ns / 1ps
-
-module Testbench;
-
-reg [7:0] data;
-wire [15:0] data_with_parity;
-
-ParityAdder parity_adder(
-    .data(data),
-    .data_with_parity(data_with_parity)
+`timescale 1ns/ 1ps
+module parity_tb;
+reg a;
+reg b;
+reg c;
+wire F;
+parity instance_parity(
+    .a(a),.b(b),.c(c),.F(F)
 );
-
 initial begin
-    data = 8'b11011010;
-    $display("DATA: %b", data);
-    $display("DATA WITH PARITY: %b", data_with_parity);
+    a=0; b=0; c=0;
+    #10;
+    a=0; b=0; c=1;
+    #10;
+    a=0; b=1; c=0;
+    #10;
+    a=0; b=1; c=1;
+    #10;
+    a=1; b=0; c=0;
+    #10;
+    a=1; b=0; c=1;
+    #10;
+    a=1; b=1; c=0;
+    #10;
+    a=1; b=1; c=1;
+    #10;
+    $finish;
 end
-
+initial begin
+    $monitor("시간=%t, a=%b, b=%b, c=%b, F=%b", $time, a, b, c, F);
+end
 endmodule
