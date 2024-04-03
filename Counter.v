@@ -1,29 +1,13 @@
-`timescale 1ns / 1ps
+module counter(clk,rst_n,cnt);
+input clk,rst_n;
+output [3:0] cnt;
 
-module BinaryCounter #(
-    parameter NUM_BITS = 4
-)(
-    input wire clk,
-    input wire reset,
-    output reg [NUM_BITS-1:0] value
-);
+reg [3:0] cnt;
 
-reg [NUM_BITS-1:0] max_value;
-
-always @(*) begin
-    max_value = (1 << NUM_BITS) - 1;
+always @(posedge clk) begin
+if(~rst_n)
+    cnt=4'b0000;
+else
+    cnt=cnt+1;
 end
-
-always @(posedge clk or posedge reset) begin
-    if (reset) begin
-        value <= 0;
-    end else begin
-        if (value == max_value) begin
-            value <= 0;
-        end else begin
-            value <= value + 1;
-        end
-    end
-end
-
 endmodule
