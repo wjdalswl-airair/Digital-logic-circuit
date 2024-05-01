@@ -7,3 +7,34 @@ module 4-bit Adder(
 assign Sum = A + B;
 
 endmodule
+
+`timescale 1ns / 1ps 
+
+module 4-bit Adder_tb;
+
+Adder UUT (
+    .A(A),
+    .B(B),
+    .Sum(Sum)
+);
+
+reg clk = 0;
+always #5 clk = ~clk;
+
+reg [3:0] A;
+reg [3:0] B;
+
+wire [4:0] Sum;
+
+initial begin
+    A = 4'b0101; 
+    B = 4'b0011; 
+    #10; 
+    $finish; 
+end
+
+always @(posedge clk) begin
+    $display("A = %b, B = %b, Sum = %b", A, B, Sum);
+end
+
+endmodule
