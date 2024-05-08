@@ -1,0 +1,31 @@
+`timescale 1ns / 1ps
+
+module testbench;
+
+// Parameters
+parameter CLK_PERIOD = 10; // Clock period in ns
+
+// Signals
+reg clk = 0;
+reg rst = 1;
+
+// Instantiate the module under test
+FDE_cpu cpu (
+    .clk(clk),
+    .rst(rst)
+);
+
+// Clock generation
+always #((CLK_PERIOD / 2)) clk = ~clk;
+
+// Reset generation
+initial begin
+    #100; // Wait for some time
+    rst = 0; // Assert reset
+    #50; // Keep reset asserted for a while
+    rst = 1; // De-assert reset
+    #200; // Run simulation for some more time
+    $finish; // Finish simulation
+end
+
+endmodule
