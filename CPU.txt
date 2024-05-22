@@ -5,11 +5,11 @@ module cpu (
     output [7:0] acc_out
 );
     wire [7:0] instruction;
-    wire [7:0] decoded_op;
-    wire [7:0] decoded_operand;
+    wire [3:0] decoded_op;
+    wire [3:0] decoded_operand;
     wire [7:0] result;
-    wire [7:0] pc;
-    wire [7:0] acc;
+    reg [7:0] pc;
+    reg [7:0] acc;
 
     fetch fetch_stage (
         .clk(clk),
@@ -37,8 +37,8 @@ module cpu (
     always @(posedge clk or posedge reset) begin
         if (reset)
             pc <= 8'b0;
-        else if (decoded_op == 8'b00000101) // JMP
-            pc <= decoded_operand;
+        else if (decoded_op == 4'b0101) // JMP
+            pc <= {4'b0, decoded_operand};
         else
             pc <= pc + 1;
     end
@@ -54,4 +54,58 @@ module cpu (
     assign pc_out = pc;
     assign acc_out = acc;
 
+endmodule
+
+module fetch (
+    input clk,
+    input reset,
+    input [7:0] pc,
+    output reg [7:0] instruction
+);
+    reg [7:0] memory [0:255];
+
+    initial begin
+        // 메모리에 간단한 프로그램 로드
+        memory[0] = 8'b00010001; // LOAD 0x01
+        memory[1] = 8'b00100001; // ADD 0x01
+        memory[2] = 8'b01010000; // JMP 0x00
+    end
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            instruction <= 8'b0;
+        else
+            instruction <= memory[pc];
+    end
+endmodule
+
+module decode (
+    input clk,
+    input [7:0] instruction,
+    output reg [3:0] op,
+    output reg [3:0] operand
+);
+    always @(posedge clk) begin
+        op <= instruction[7:4];
+        operand <= instruction[3:0];
+    end
+endmodule
+
+module execute (
+    input clk,
+    input [3:0] op,
+    input [3:0] operand,
+    input [7:0] acc,
+    output reg [7:0] result
+);
+    always @(posedge clk) begin
+        case (op)
+            4'b0001: result <= {4'b0, operand}; // LOAD
+            4'b0010: result <= acc + operand; // ADD
+            4'b0011: result <= acc - operand; // SUB
+            4'b0100: result <= acc; // STORE (단순히 acc 반환)
+            4'b0101: result <= acc; // JMP (별도 처리)
+            default: result <= acc; // NOP 등
+        endcase
+    end
 endmodule
