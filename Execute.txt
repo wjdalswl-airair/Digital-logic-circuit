@@ -1,0 +1,18 @@
+module execute (
+    input clk,
+    input [7:0] op,
+    input [7:0] operand,
+    input [7:0] acc,
+    output reg [7:0] result
+);
+    always @(posedge clk) begin
+        case (op)
+            8'b00000001: result <= operand; // LOAD
+            8'b00000010: result <= acc + operand; // ADD
+            8'b00000011: result <= acc - operand; // SUB
+            8'b00000100: result <= acc; // STORE (단순히 acc 반환)
+            8'b00000101: result <= acc; // JMP (별도 처리)
+            default: result <= acc; // NOP 등
+        endcase
+    end
+endmodule

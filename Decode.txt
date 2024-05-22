@@ -1,0 +1,11 @@
+module decode (
+    input clk,
+    input [7:0] instruction,
+    output reg [7:0] op,
+    output reg [7:0] operand
+);
+    always @(posedge clk) begin
+        op <= instruction[7:4];
+        operand <= instruction[3:0];
+    end
+endmodule
